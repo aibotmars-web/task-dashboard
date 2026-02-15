@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任務進度監控</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 30px; font-size: 2rem; }
+        .stats { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .stat-number { font-size: 3rem; font-weight: bold; margin: 10px 0; }
+        .stat-label { opacity: 0.8; font-size: 0.9rem; }
+        .p0 { color: #ff4757; }
+        .p1 { color: #ffa502; }
+        .p2 { color: #2ed573; }
+        .p3 { color: #7bed9f; }
+        .in-progress { color: #1e90ff; }
+        .completed { color: #2ed573; }
+        .blocked { color: #ff4757; }
+        .tasks {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            border-left: 4px solid #666;
+        }
+        .task.p0 { border-left-color: #ff4757; }
+        .task.p1 { border-left-color: #ffa502; }
+        .task.p2 { border-left-color: #2ed573; }
+        .task.p3 { border-left-color: #7bed9f; }
+        .task-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .task-badge.p0 { background: #ff4757; }
+        .task-badge.p1 { background: #ffa502; color: #000; }
+        .task-badge.p2 { background: #2ed573; color: #000; }
+        .task-badge.p3 { background: #7bed9f; color: #000; }
+        .task-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .task-status.in_progress { background: #1e90ff; }
+        .task-status.completed { background: #2ed573; color: #000; }
+        .task-status.blocked { background: #ff4757; }
+        .last-updated {
+            text-align: center;
+            margin-top: 30px;
+            opacity: 0.6;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 任務進度監控儀表板</h1>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">緊急任務</div>
+                <div class="stat-number p0">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">進行中</div>
+                <div class="stat-number in-progress">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">已完成</div>
+                <div class="stat-number completed">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">阻塞</div>
+                <div class="stat-number blocked">0</div>
+            </div>
+        </div>
+        
+        <div class="tasks">
+            <h2>📋 最近任務</h2>
+            <div class="task p1">
+                <span>建立任務監控儀表板</span>
+                <div>
+                    <span class="task-badge p1">P1</span>
+                    <span class="task-status in_progress">進行中</span>
+                </div>
+            </div>
+            <div class="task p2">
+                <span>設定 GitHub Actions</span>
+                <div>
+                    <span class="task-badge p2">P2</span>
+                    <span class="task-status in_progress">進行中</span>
+                </div>
+            </div>
+            <div class="task p2">
+                <span>整合 BD 任務系統</span>
+                <div>
+                    <span class="task-badge p2">P2</span>
+                    <span class="task-status completed">已完成</span>
+                </div>
+            </div>
+            <div class="task p0">
+                <span>測試 EverMemOS 記憶系統</span>
+                <div>
+                    <span class="task-badge p0">P0</span>
+                    <span class="task-status completed">已完成</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="last-updated">
+           最後更新：<span id="time"></span>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('time').textContent = new Date().toLocaleString('zh-TW');
+    </script>
+</body>
+</html>
