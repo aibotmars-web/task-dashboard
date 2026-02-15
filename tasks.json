@@ -12,22 +12,22 @@
       "title": "建立任務儀表板網頁",
       "description": "GitHub Pages 部署任務監控儀表板",
       "priority": "P1",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "workspace-main-4",
       "title": "安裝所有 Skills 和 MCP",
       "description": "安裝並設定所有必要的技能和外掛",
       "priority": "P0",
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "workspace-main-5",
       "title": "整合 BD 到所有 Sub-Agent",
       "description": "讓所有子代理使用 BD 管理任務",
       "priority": "P1",
-      "status": "pending"
+      "status": "done"
     }
   ],
-  "updated": "Sun Feb 15 21:59:06 CST 2026"
+  "updated": "Sun Feb 15 22:01:33 CST 2026"
 }
