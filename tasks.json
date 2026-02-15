@@ -1,0 +1,10 @@
+{
+  "tasks": [
+    {"priority": "P0", "title": "建立任務監控儀表板", "status": "done"},
+    {"priority": "P1", "title": "設定 BD API 自動同步", "status": "in_progress"},
+    {"priority": "P2", "title": "整合 OpenClaw 記憶系統", "status": "done"},
+    {"priority": "P2", "title": "設定 GitHub 自動化", "status": "done"},
+    {"priority": "P3", "title": "優化 Sub-Agent 提示詞", "status": "pending"}
+  ],
+  "updated": "2026-02-15T12:00:00Z"
+}
