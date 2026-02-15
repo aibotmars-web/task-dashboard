@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>任務進度監控 - 自動同步</title>
+    <title>任務進度監控 - BD 同步</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -18,9 +18,11 @@
         .sync-status { 
             text-align: center; 
             margin-bottom: 30px;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             opacity: 0.7;
         }
+        .sync-status.error { color: #ff6b6b; }
+        .sync-status.success { color: #2ed573; }
         .stats { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
@@ -40,7 +42,7 @@
         .p1 { color: #ffa502; }
         .p2 { color: #2ed573; }
         .p3 { color: #7bed9f; }
-        .running { color: #1e90ff; }
+        .in_progress { color: #1e90ff; }
         .done { color: #2ed573; }
         .blocked { color: #ff6b6b; }
         .pending { color: #888; }
@@ -79,33 +81,36 @@
             border-radius: 15px;
             font-size: 0.75rem;
         }
-        .task-status.running { background: #1e90ff; }
+        .task-status.in_progress { background: #1e90ff; }
         .task-status.done { background: #2ed573; color: #000; }
         .task-status.blocked { background: #ff6b6b; }
         .task-status.pending { background: #555; }
-        .manual-list {
-            margin-top: 30px;
+        .manual-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
             padding: 15px;
             background: rgba(255,165,0,0.1);
             border-radius: 10px;
-            border-left: 4px solid #ffa502;
+            color: #ffa502;
+            text-decoration: none;
         }
-        .manual-list h3 { color: #ffa502; margin-bottom: 10px; }
+        .manual-link:hover { background: rgba(255,165,0,0.2); }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📊 任務進度監控</h1>
-        <div class="sync-status" id="syncStatus">正在同步...</div>
+        <div class="sync-status" id="syncStatus">載入中...</div>
         
-        <div class="stats" id="stats">
+        <div class="stats">
             <div class="stat-card">
                 <div class="stat-label">緊急 [P0]</div>
                 <div class="stat-number p0" id="p0Count">-</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">進行中</div>
-                <div class="stat-number running" id="runningCount">-</div>
+                <div class="stat-number in_progress" id="runningCount">-</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">已完成</div>
@@ -117,30 +122,22 @@
             </div>
         </div>
         
-        <div class="tasks" id="tasks">
+        <div class="tasks">
             <h2>📋 任務列表</h2>
             <div id="taskList">載入中...</div>
         </div>
         
-        <div class="manual-list">
-            <h3>⚠️ 說明</h3>
-            <p>此儀表板每 60 秒自動同步 BD 任務狀態。需設定 API 伺服器才能自動抓取。</p>
-        </div>
+        <a href="https://github.com/aibotmars-web/task-dashboard/edit/main/tasks.json" class="manual-link" target="_blank">
+            ✏️ 點擊這裡手動更新任務資料
+        </a>
     </div>
     
     <script>
-        // 靜態數據（預設）
-        const defaultTasks = [
-            {priority: 'P0', title: '建立任務監控儀表板', status: 'done'},
-            {priority: 'P1', title: '設定 BD API 自動同步', status: 'running'},
-            {priority: 'P2', title: '整合 OpenClaw 記憶系統', status: 'done'},
-            {priority: 'P2', title: '設定 GitHub 自動化', status: 'done'},
-            {priority: 'P3', title: '優化 Sub-Agent 提示詞', status: 'pending'},
-        ];
+        const TASKS_URL = 'https://raw.githubusercontent.com/aibotmars-web/task-dashboard/main/tasks.json';
         
         function renderTasks(tasks) {
             const p0 = tasks.filter(t => t.priority === 'P0').length;
-            const running = tasks.filter(t => t.status === 'running').length;
+            const running = tasks.filter(t => t.status === 'in_progress').length;
             const done = tasks.filter(t => t.status === 'done').length;
             const blocked = tasks.filter(t => t.status === 'blocked').length;
             
@@ -155,27 +152,30 @@
                     <span>${t.title}</span>
                     <div>
                         <span class="task-badge ${t.priority.toLowerCase()}">${t.priority}</span>
-                        <span class="task-status ${t.status}">${t.status}</span>
+                        <span class="task-status ${t.status}">${t.status === 'in_progress' ? '進行中' : t.status}</span>
                     </div>
                 </div>`;
             });
             document.getElementById('taskList').innerHTML = html || '無任務';
         }
         
-        // 嘗試從 API 獲取
-        fetch('http://localhost:3456/api/tasks', {mode: 'cors'})
+        fetch(TASKS_URL + '?t=' + Date.now())
             .then(r => r.json())
             .then(data => {
-                document.getElementById('syncStatus').textContent = '✅ 已同步 ' + new Date().toLocaleTimeString('zh-TW');
+                document.getElementById('syncStatus').textContent = '✅ 同步成功 - ' + new Date().toLocaleString('zh-TW');
+                document.getElementById('syncStatus').className = 'sync-status success';
                 renderTasks(data.tasks || []);
             })
             .catch(e => {
-                document.getElementById('syncStatus').textContent = '⚠️ 使用預設數據 (' + new Date().toLocaleTimeString('zh-TW') + ')';
-                renderTasks(defaultTasks);
+                document.getElementById('syncStatus').textContent = '❌ 載入失敗，使用預設資料';
+                document.getElementById('syncStatus').className = 'sync-status error';
+                renderTasks([
+                    {priority: 'P0', title: '建立任務監控儀表板', status: 'done'},
+                    {priority: 'P1', title: '設定 BD 同步', status: 'in_progress'},
+                ]);
             });
         
-        // 每 60 秒刷新
-        setTimeout(() => location.reload(), 60000);
+        setTimeout(() => location.reload(), 30000);
     </script>
 </body>
 </html>
