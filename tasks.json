@@ -1,10 +1,33 @@
 {
   "tasks": [
-    {"priority": "P0", "title": "建立任務監控儀表板", "status": "done"},
-    {"priority": "P1", "title": "設定 BD API 自動同步", "status": "in_progress"},
-    {"priority": "P2", "title": "整合 OpenClaw 記憶系統", "status": "done"},
-    {"priority": "P2", "title": "設定 GitHub 自動化", "status": "done"},
-    {"priority": "P3", "title": "優化 Sub-Agent 提示詞", "status": "pending"}
+    {
+      "id": "workspace-main-2",
+      "title": "設定真相網 GitHub 帳號",
+      "description": "完成 realtaiwan 帳號設定與網站部署",
+      "priority": "P0",
+      "status": "pending"
+    },
+    {
+      "id": "workspace-main-3",
+      "title": "建立任務儀表板網頁",
+      "description": "GitHub Pages 部署任務監控儀表板",
+      "priority": "P1",
+      "status": "pending"
+    },
+    {
+      "id": "workspace-main-4",
+      "title": "安裝所有 Skills 和 MCP",
+      "description": "安裝並設定所有必要的技能和外掛",
+      "priority": "P0",
+      "status": "pending"
+    },
+    {
+      "id": "workspace-main-5",
+      "title": "整合 BD 到所有 Sub-Agent",
+      "description": "讓所有子代理使用 BD 管理任務",
+      "priority": "P1",
+      "status": "pending"
+    }
   ],
-  "updated": "2026-02-15T12:00:00Z"
+  "updated": "Sun Feb 15 21:41:46 CST 2026"
 }
