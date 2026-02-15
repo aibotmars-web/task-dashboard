@@ -5,7 +5,7 @@
       "title": "設定真相網 GitHub 帳號",
       "description": "完成 realtaiwan 帳號設定與網站部署",
       "priority": "P0",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "workspace-main-3",
@@ -29,5 +29,5 @@
       "status": "pending"
     }
   ],
-  "updated": "Sun Feb 15 21:45:22 CST 2026"
+  "updated": "Sun Feb 15 21:55:51 CST 2026"
 }
