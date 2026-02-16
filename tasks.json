@@ -1,33 +1,4 @@
 {
-  "tasks": [
-    {
-      "id": "workspace-main-2",
-      "title": "設定真相網 GitHub 帳號",
-      "description": "完成 realtaiwan 帳號設定與網站部署",
-      "priority": "P0",
-      "status": "done"
-    },
-    {
-      "id": "workspace-main-3",
-      "title": "建立任務儀表板網頁",
-      "description": "GitHub Pages 部署任務監控儀表板",
-      "priority": "P1",
-      "status": "done"
-    },
-    {
-      "id": "workspace-main-4",
-      "title": "安裝所有 Skills 和 MCP",
-      "description": "安裝並設定所有必要的技能和外掛",
-      "priority": "P0",
-      "status": "in_progress"
-    },
-    {
-      "id": "workspace-main-5",
-      "title": "整合 BD 到所有 Sub-Agent",
-      "description": "讓所有子代理使用 BD 管理任務",
-      "priority": "P1",
-      "status": "done"
-    }
-  ],
-  "updated": "Mon Feb 16 15:10:03 CST 2026"
+  "tasks": [],
+  "updated": "Tue Feb 17 03:01:34 CST 2026"
 }
