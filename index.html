@@ -1,107 +1,454 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>任務進度監控 - BD 同步</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-card-hover: #1f2b47;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6b6b7b;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --border: rgba(255,255,255,0.08);
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
+            --p0: #ef4444;
+            --p1: #f59e0b;
+            --p2: #22c55e;
+            --p3: #10b981;
+            --in_progress: #3b82f6;
+            --done: #22c55e;
+            --blocked: #ef4444;
+            --pending: #6b7280;
+            --gradient: linear-gradient(135deg, #1a1a2e 0%, #0f0f23 100%);
+            --card-gradient: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --border: rgba(0,0,0,0.08);
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+            --gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-gradient: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--gradient);
             min-height: 100vh;
-            padding: 20px;
-            color: #fff;
+            padding: 24px;
+            color: var(--text-primary);
+            transition: background 0.4s ease, color 0.3s ease;
+            line-height: 1.6;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; margin-bottom: 10px; font-size: 2rem; }
-        .sync-status { 
-            text-align: center; 
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-            opacity: 0.7;
+
+        .container { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            animation: fadeIn 0.6s ease;
         }
-        .sync-status.error { color: #ff6b6b; }
-        .sync-status.success { color: #2ed573; }
-        .stats { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-            gap: 15px; 
-            margin-bottom: 30px;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .stat-card {
-            background: rgba(255,255,255,0.1);
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-toggle {
+            width: 48px;
+            height: 48px;
             border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-card-hover);
+            transform: scale(1.05);
+        }
+
+        .sync-status {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        .sync-status.error { color: var(--blocked); }
+        .sync-status.success { color: var(--done); }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 640px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .stat-card {
+            background: var(--card-gradient);
+            border: 1px solid var(--border);
+            border-radius: 16px;
             padding: 20px;
             text-align: center;
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
-        .stat-number { font-size: 2.5rem; font-weight: bold; margin: 8px 0; }
-        .stat-label { opacity: 0.8; font-size: 0.85rem; }
-        .p0 { color: #ff6b6b; }
-        .p1 { color: #ffa502; }
-        .p2 { color: #2ed573; }
-        .p3 { color: #7bed9f; }
-        .in_progress { color: #1e90ff; }
-        .done { color: #2ed573; }
-        .blocked { color: #ff6b6b; }
-        .pending { color: #888; }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), #a855f7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
+        }
+
+        .stat-card:hover::before { opacity: 1; }
+
+        .stat-number {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin: 8px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover .stat-number { transform: scale(1.1); }
+
+        .stat-label { 
+            color: var(--text-secondary); 
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .p0 { color: var(--p0); }
+        .p1 { color: var(--p1); }
+        .p2 { color: var(--p2); }
+        .p3 { color: var(--p3); }
+        .in_progress { color: var(--in_progress); }
+        .done { color: var(--done); }
+        .blocked { color: var(--blocked); }
+        .pending { color: var(--pending); }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
         .tasks {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
         }
+
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tasks-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .task-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .task {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
-            margin: 8px 0;
-            background: rgba(255,255,255,0.08);
-            border-radius: 10px;
-            border-left: 4px solid #666;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            animation: slideUp 0.4s ease forwards;
+            opacity: 0;
         }
-        .task.p0 { border-left-color: #ff6b6b; }
-        .task.p1 { border-left-color: #ffa502; }
-        .task.p2 { border-left-color: #2ed573; }
-        .task.p3 { border-left-color: #7bed9f; }
+
+        .task:hover {
+            transform: translateX(6px);
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-priority {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .task-priority.p0 { background: var(--p0); box-shadow: 0 0 8px var(--p0); }
+        .task-priority.p1 { background: var(--p1); box-shadow: 0 0 8px var(--p1); }
+        .task-priority.p2 { background: var(--p2); box-shadow: 0 0 8px var(--p2); }
+        .task-priority.p3 { background: var(--p3); box-shadow: 0 0 8px var(--p3); }
+
+        .task-title {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .task-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
         .task-badge {
-            padding: 3px 10px;
-            border-radius: 15px;
+            padding: 4px 12px;
+            border-radius: 8px;
             font-size: 0.75rem;
-            font-weight: bold;
-            margin-right: 10px;
+            font-weight: 600;
         }
-        .task-badge.p0 { background: #ff6b6b; }
-        .task-badge.p1 { background: #ffa502; color: #000; }
-        .task-badge.p2 { background: #2ed573; color: #000; }
-        .task-badge.p3 { background: #7bed9f; color: #000; }
+
+        .task-badge.p0 { background: rgba(239, 68, 68, 0.15); color: var(--p0); }
+        .task-badge.p1 { background: rgba(245, 158, 11, 0.15); color: var(--p1); }
+        .task-badge.p2 { background: rgba(34, 197, 94, 0.15); color: var(--p2); }
+        .task-badge.p3 { background: rgba(16, 185, 129, 0.15); color: var(--p3); }
+
         .task-status {
-            padding: 3px 10px;
-            border-radius: 15px;
+            padding: 6px 14px;
+            border-radius: 20px;
             font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
         }
-        .task-status.in_progress { background: #1e90ff; }
-        .task-status.done { background: #2ed573; color: #000; }
-        .task-status.blocked { background: #ff6b6b; }
-        .task-status.pending { background: #555; }
-        .manual-link {
-            display: block;
+
+        .task-status.in_progress { background: rgba(59, 130, 246, 0.15); color: var(--in_progress); }
+        .task-status.done { background: rgba(34, 197, 94, 0.15); color: var(--done); }
+        .task-status.blocked { background: rgba(239, 68, 68, 0.15); color: var(--blocked); }
+        .task-status.pending { background: rgba(107, 114, 128, 0.15); color: var(--pending); }
+
+        .empty-state {
             text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255,165,0,0.1);
-            border-radius: 10px;
-            color: #ffa502;
-            text-decoration: none;
+            padding: 48px 24px;
+            color: var(--text-muted);
         }
-        .manual-link:hover { background: rgba(255,165,0,0.2); }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .manual-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .manual-link:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(99, 102, 241, 0.25);
+        }
+
+        @media (max-width: 600px) {
+            .task {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .task-right {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📊 任務進度監控</h1>
-        <div class="sync-status" id="syncStatus">載入中...</div>
+        <div class="header">
+            <div class="header-left">
+                <h1>任務進度監控</h1>
+            </div>
+            <div class="header-right">
+                <div class="sync-status" id="syncStatus">
+                    <span class="sync-dot"></span>
+                    載入中...
+                </div>
+                <button class="theme-toggle" id="themeToggle" title="切換主題">🌙</button>
+            </div>
+        </div>
         
         <div class="stats">
             <div class="stat-card">
@@ -121,10 +468,26 @@
                 <div class="stat-number blocked" id="blockedCount">-</div>
             </div>
         </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜尋任務...">
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="in_progress">進行中</button>
+                <button class="filter-btn" data-filter="done">已完成</button>
+                <button class="filter-btn" data-filter="blocked">阻塞</button>
+                <button class="filter-btn" data-filter="pending">待處理</button>
+            </div>
+        </div>
         
         <div class="tasks">
-            <h2>📋 任務列表</h2>
-            <div id="taskList">載入中...</div>
+            <div class="tasks-header">
+                <h2>📋 任務列表</h2>
+                <span class="task-count" id="taskCount">0 個任務</span>
+            </div>
+            <div class="task-list" id="taskList"></div>
         </div>
         
         <a href="https://github.com/aibotmars-web/task-dashboard/edit/main/tasks.json" class="manual-link" target="_blank">
@@ -135,6 +498,61 @@
     <script>
         const TASKS_URL = 'https://raw.githubusercontent.com/aibotmars-web/task-dashboard/main/tasks.json';
         
+        let allTasks = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let isDarkMode = true;
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                isDarkMode = savedTheme === 'dark';
+            } else {
+                isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            applyTheme();
+        }
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+            document.getElementById('themeToggle').textContent = isDarkMode ? '🌙' : '☀️';
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            applyTheme();
+        });
+
+        function getStatusLabel(status) {
+            const labels = {
+                'in_progress': '進行中',
+                'done': '已完成',
+                'blocked': '阻塞',
+                'pending': '待處理'
+            };
+            return labels[status] || status;
+        }
+
+        function filterTasks() {
+            let filtered = allTasks;
+            
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(t => t.status === currentFilter);
+            }
+            
+            if (currentSearch) {
+                const search = currentSearch.toLowerCase();
+                filtered = filtered.filter(t => 
+                    t.title.toLowerCase().includes(search) ||
+                    t.priority.toLowerCase().includes(search) ||
+                    t.status.toLowerCase().includes(search)
+                );
+            }
+            
+            return filtered;
+        }
+
         function renderTasks(tasks) {
             const p0 = tasks.filter(t => t.priority === 'P0').length;
             const running = tasks.filter(t => t.status === 'in_progress').length;
@@ -146,36 +564,70 @@
             document.getElementById('doneCount').textContent = done;
             document.getElementById('blockedCount').textContent = blocked;
             
+            const filtered = filterTasks();
+            document.getElementById('taskCount').textContent = `${filtered.length} 個任務`;
+            
+            if (filtered.length === 0) {
+                document.getElementById('taskList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>沒有找到符合的任務</p>
+                    </div>
+                `;
+                return;
+            }
+            
             let html = '';
-            tasks.forEach(t => {
-                html += `<div class="task ${t.priority.toLowerCase()}">
-                    <span>${t.title}</span>
-                    <div>
+            filtered.forEach((t, i) => {
+                html += `<div class="task" style="animation-delay: ${i * 0.05}s">
+                    <div class="task-left">
+                        <div class="task-priority ${t.priority.toLowerCase()}"></div>
+                        <span class="task-title">${t.title}</span>
+                    </div>
+                    <div class="task-right">
                         <span class="task-badge ${t.priority.toLowerCase()}">${t.priority}</span>
-                        <span class="task-status ${t.status}">${t.status === 'in_progress' ? '進行中' : t.status}</span>
+                        <span class="task-status ${t.status}">${getStatusLabel(t.status)}</span>
                     </div>
                 </div>`;
             });
-            document.getElementById('taskList').innerHTML = html || '無任務';
+            document.getElementById('taskList').innerHTML = html;
         }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderTasks(allTasks);
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            renderTasks(allTasks);
+        });
+
+        initTheme();
         
         fetch(TASKS_URL + '?t=' + Date.now())
             .then(r => r.json())
             .then(data => {
-                document.getElementById('syncStatus').textContent = '✅ 同步成功 - ' + new Date().toLocaleString('zh-TW');
+                document.getElementById('syncStatus').innerHTML = '✅ 同步成功';
                 document.getElementById('syncStatus').className = 'sync-status success';
-                renderTasks(data.tasks || []);
+                allTasks = data.tasks || [];
+                renderTasks(allTasks);
             })
             .catch(e => {
-                document.getElementById('syncStatus').textContent = '❌ 載入失敗，使用預設資料';
+                document.getElementById('syncStatus').innerHTML = '❌ 載入失敗';
                 document.getElementById('syncStatus').className = 'sync-status error';
-                renderTasks([
+                allTasks = [
                     {priority: 'P0', title: '建立任務監控儀表板', status: 'done'},
                     {priority: 'P1', title: '設定 BD 同步', status: 'in_progress'},
-                ]);
+                ];
+                renderTasks(allTasks);
             });
         
-        setTimeout(() => location.reload(), 30000);
+        setTimeout(() => location.reload(), 60000);
     </script>
 </body>
 </html>
