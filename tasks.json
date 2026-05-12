@@ -1,19 +1,75 @@
 {
   "tasks": [
-    {"priority": "P0", "title": "OpenClaw 版本管理 (v2026.5.7)", "status": "done"},
-    {"priority": "P0", "title": "YouTube 知識庫 LLM 總結超時修復", "status": "done"},
-    {"priority": "P0", "title": "Polymarket 自動交易系統啟動（待老闆確認市場 ID）", "status": "blocked"},
-    {"priority": "P1", "title": "真相網內容更新", "status": "done"},
-    {"priority": "P1", "title": "任務儀表板同步 TASKS.md", "status": "done"},
-    {"priority": "P1", "title": "Google Sheets 自動更新腳本（缺 credentials）", "status": "blocked"},
-    {"priority": "P1", "title": "Sub-Agent 工具確認（gog OAuth 需重新登入）", "status": "in_progress"},
-    {"priority": "P1.5", "title": "IG Carousel 每日發文流程", "status": "in_progress"},
-    {"priority": "P2", "title": "DeerFlow 開機自動啟動", "status": "done"},
-    {"priority": "P2", "title": "OpenClaw auto-fix 腳本 macOS 版", "status": "done"},
-    {"priority": "P2", "title": "兒童 AI 繪圖書（待老闆確認主題）", "status": "blocked"},
-    {"priority": "P2", "title": "跨境電商（淘寶→蝦皮/亞馬遜，待老闆確認）", "status": "blocked"},
-    {"priority": "P2", "title": "App 開發（待老闆確認功能需求）", "status": "blocked"},
-    {"priority": "P2", "title": "SSH 互連救援 Mac ↔ Windows（待 Windows 安裝）", "status": "blocked"}
+    {
+      "priority": "P0",
+      "title": "OpenClaw 版本管理 (v2026.5.7)",
+      "status": "done"
+    },
+    {
+      "priority": "P0",
+      "title": "YouTube 知識庫 LLM 總結超時修復",
+      "status": "done"
+    },
+    {
+      "priority": "P0",
+      "title": "Polymarket 自動交易系統啟動（待老闆確認市場 ID）",
+      "status": "blocked"
+    },
+    {
+      "priority": "P1",
+      "title": "真相網內容更新",
+      "status": "done"
+    },
+    {
+      "priority": "P1",
+      "title": "任務儀表板同步 TASKS.md",
+      "status": "done"
+    },
+    {
+      "priority": "P1",
+      "title": "Google Sheets 自動更新腳本（缺 credentials）",
+      "status": "blocked"
+    },
+    {
+      "priority": "P1",
+      "title": "Sub-Agent 工具確認（gog OAuth 需重新登入）",
+      "status": "in_progress"
+    },
+    {
+      "priority": "P1.5",
+      "title": "IG Carousel 每日發文流程（基本正常，2026-05-12 知識庫爬蟲正常）",
+      "status": "in_progress"
+    },
+    {
+      "priority": "P2",
+      "title": "DeerFlow 開機自動啟動",
+      "status": "done"
+    },
+    {
+      "priority": "P2",
+      "title": "OpenClaw auto-fix 腳本 macOS 版",
+      "status": "done"
+    },
+    {
+      "priority": "P2",
+      "title": "兒童 AI 繪圖書（待老闆確認主題）",
+      "status": "blocked"
+    },
+    {
+      "priority": "P2",
+      "title": "跨境電商（淘寶→蝦皮/亞馬遜，待老闆確認）",
+      "status": "blocked"
+    },
+    {
+      "priority": "P2",
+      "title": "App 開發（待老闆確認功能需求）",
+      "status": "blocked"
+    },
+    {
+      "priority": "P2",
+      "title": "SSH 互連救援 Mac ↔ Windows（待 Windows 安裝）",
+      "status": "blocked"
+    }
   ],
-  "lastUpdated": "2026-05-09T16:00:00+08:00"
+  "lastUpdated": "2026-05-12T14:00:00+08:00"
 }
